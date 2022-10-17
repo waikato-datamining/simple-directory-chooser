@@ -18,7 +18,7 @@
  * Copyright (C) 2022 University of Waikato, Hamilton, New Zealand
  */
 
-package nz.ac.waikato.cms.adams.simpledirectorychooser.core;
+package nz.ac.waikato.cms.adams.simpledirectorychooser.tree;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 

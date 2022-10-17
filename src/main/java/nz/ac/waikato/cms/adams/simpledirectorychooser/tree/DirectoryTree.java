@@ -18,7 +18,9 @@
  * Copyright (C) 2022 University of Waikato, Hamilton, New Zealand
  */
 
-package nz.ac.waikato.cms.adams.simpledirectorychooser.core;
+package nz.ac.waikato.cms.adams.simpledirectorychooser.tree;
+
+import nz.ac.waikato.cms.adams.simpledirectorychooser.icons.IconManager;
 
 import javax.swing.JTree;
 import javax.swing.event.TreeExpansionEvent;
@@ -39,8 +41,8 @@ import java.util.List;
  * @author fracpete (fracpete at waikato dot ac dot nz)
  */
 public class DirectoryTree
-  extends JTree
-  implements TreeWillExpandListener, TreeSelectionListener {
+    extends JTree
+    implements TreeWillExpandListener, TreeSelectionListener {
 
   /** the current directory. */
   protected File m_CurrentDir;
@@ -62,6 +64,7 @@ public class DirectoryTree
    */
   public DirectoryTree(boolean showHidden) {
     super();
+    setIconManager(new IconManager());
     m_ShowHidden = showHidden;
     buildTree();
   }
@@ -187,9 +190,9 @@ public class DirectoryTree
     for (i = 0; i < parts.length; i++) {
       node = node.expand(parts[i]);
       if (node == null)
-        break;
+	break;
       if (i == parts.length - 1)
-        result = (DirectoryNode) node;
+	result = (DirectoryNode) node;
     }
 
     return result;
@@ -239,5 +242,26 @@ public class DirectoryTree
   public void setShowHidden(boolean value) {
     m_ShowHidden = value;
     refresh();
+  }
+
+  /**
+   * Sets the icon manager to use.
+   *
+   * @param value	the manager
+   */
+  public void setIconManager(IconManager value) {
+    DirectoryTreeCellRenderer renderer;
+
+    renderer = new DirectoryTreeCellRenderer(value);
+    setCellRenderer(renderer);
+  }
+
+  /**
+   * Returns the icon manager in use.
+   *
+   * @return		the manager
+   */
+  public IconManager getIconManager() {
+    return ((DirectoryTreeCellRenderer) getCellRenderer()).getIconManager();
   }
 }

@@ -1,0 +1,16 @@
+# comma-separated list of all available sets
+available_sets=\
+  default,\
+  boxicons_regular,\
+  boxicons_solid,\
+  primo
+
+# the locations of the icon sets, must contain a file called "icons.props"
+# (format: location_<ICONSETNAME>)
+location_default=nz/ac/waikato/cms/adams/simpledirectorychooser/icons/default
+location_boxicons_regular=nz/ac/waikato/cms/adams/simpledirectorychooser/icons/boxicons_regular
+location_boxicons_solid=nz/ac/waikato/cms/adams/simpledirectorychooser/icons/boxicons_solid
+location_primo=nz/ac/waikato/cms/adams/simpledirectorychooser/icons/primo
+
+# the set to use by default
+active_set=default

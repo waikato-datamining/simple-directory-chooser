@@ -20,11 +20,10 @@
 
 package nz.ac.waikato.cms.adams.simpledirectorychooser;
 
-import nz.ac.waikato.cms.adams.simpledirectorychooser.core.DirectoryTree;
+import nz.ac.waikato.cms.adams.simpledirectorychooser.tree.DirectoryTree;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.core.SimplePanel;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.core.SimpleScrollPane;
 
-import javax.swing.JTextField;
 import java.awt.BorderLayout;
 import java.io.File;
 
