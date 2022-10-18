@@ -38,16 +38,16 @@ public class PanelExample {
 
   public static void main(String[] args) throws Exception {
     SimpleDirectoryChooserPanel panel = new SimpleDirectoryChooserPanel();
-    if (args.length > 0)
-      panel.setCurrentDirectory(new File(args[0]));
-    else
-      panel.setCurrentDirectory(new File(System.getProperty("user.dir")));
     panel.addChangeListener(new DirectoryChangeListener() {
       @Override
       public void directoryChanged(DirectoryChangeEvent e) {
         System.out.println("Dir changed: " + e.getCurrentDirectory());
       }
     });
+    if (args.length > 0)
+      panel.setCurrentDirectory(new File(args[0]));
+    else
+      panel.setCurrentDirectory(new File(System.getProperty("user.dir")));
     JFrame frame = new JFrame("Panel example");
     frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     frame.getContentPane().setLayout(new BorderLayout());
