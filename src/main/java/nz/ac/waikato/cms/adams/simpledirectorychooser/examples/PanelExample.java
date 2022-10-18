@@ -21,6 +21,8 @@
 package nz.ac.waikato.cms.adams.simpledirectorychooser.examples;
 
 import nz.ac.waikato.cms.adams.simpledirectorychooser.SimpleDirectoryChooserPanel;
+import nz.ac.waikato.cms.adams.simpledirectorychooser.events.DirectoryChangeEvent;
+import nz.ac.waikato.cms.adams.simpledirectorychooser.events.DirectoryChangeListener;
 
 import javax.swing.JFrame;
 import java.awt.BorderLayout;
@@ -40,6 +42,12 @@ public class PanelExample {
       panel.setCurrentDirectory(new File(args[0]));
     else
       panel.setCurrentDirectory(new File(System.getProperty("user.dir")));
+    panel.addChangeListener(new DirectoryChangeListener() {
+      @Override
+      public void directoryChanged(DirectoryChangeEvent e) {
+        System.out.println("Dir changed: " + e.getCurrentDirectory());
+      }
+    });
     JFrame frame = new JFrame("Panel example");
     frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     frame.getContentPane().setLayout(new BorderLayout());
@@ -47,6 +55,5 @@ public class PanelExample {
     frame.setSize(new Dimension(600, 480));
     frame.setLocationRelativeTo(null);
     frame.setVisible(true);
-    System.out.println(panel.getCurrentDirectory());
   }
 }

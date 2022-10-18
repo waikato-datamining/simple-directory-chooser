@@ -20,6 +20,8 @@
 
 package nz.ac.waikato.cms.adams.simpledirectorychooser.tree;
 
+import nz.ac.waikato.cms.adams.simpledirectorychooser.events.DirectoryChangeEvent;
+import nz.ac.waikato.cms.adams.simpledirectorychooser.events.DirectoryChangeListener;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.icons.IconManager;
 
 import javax.swing.JTree;
@@ -33,7 +35,9 @@ import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Displays the directory structure.
@@ -50,6 +54,9 @@ public class DirectoryTree
   /** whether to show hidden dirs. */
   protected boolean m_ShowHidden;
 
+  /** the change listeners. */
+  protected Set<DirectoryChangeListener> m_ChangeListeners;
+
   /**
    * Initializes the tree. Does not show hidden dirs.
    */
@@ -63,10 +70,30 @@ public class DirectoryTree
    * @param showHidden 	whether to show hidden dirs
    */
   public DirectoryTree(boolean showHidden) {
+    this(showHidden, new IconManager());
+  }
+
+  /**
+   * Initializes the tree.
+   *
+   * @param showHidden 	whether to show hidden dirs
+   * @param iconManager the icon manager to use
+   */
+  public DirectoryTree(boolean showHidden, IconManager iconManager) {
     super();
-    setIconManager(new IconManager());
+    initializeMembers();
     m_ShowHidden = showHidden;
+    setIconManager(iconManager);
     buildTree();
+  }
+
+  /**
+   * Initializes the members.
+   */
+  protected void initializeMembers() {
+    m_CurrentDir      = null;
+    m_ChangeListeners = new HashSet<>();
+    m_ShowHidden      = false;
   }
 
   /**
@@ -129,7 +156,7 @@ public class DirectoryTree
     if ((e.getPath() != null) && (e.getPath().getLastPathComponent() instanceof DirectoryNode)) {
       node = (DirectoryNode) e.getPath().getLastPathComponent();
       m_CurrentDir = node.getDirectory();
-      // TODO change event
+      notifyChangeListeners();
     }
   }
 
@@ -263,5 +290,34 @@ public class DirectoryTree
    */
   public IconManager getIconManager() {
     return ((DirectoryTreeCellRenderer) getCellRenderer()).getIconManager();
+  }
+
+  /**
+   * Adds the listener for changes in the selected directory.
+   *
+   * @param l		the listener to add
+   */
+  public void addChangeListener(DirectoryChangeListener l) {
+    m_ChangeListeners.add(l);
+  }
+
+  /**
+   * Removes the listener for changes in the selected directory.
+   *
+   * @param l		the listener to remove
+   */
+  public void removeChangeListener(DirectoryChangeListener l) {
+    m_ChangeListeners.remove(l);
+  }
+
+  /**
+   * Notifies all change listeners that the current directory has changed.
+   */
+  protected void notifyChangeListeners() {
+    DirectoryChangeEvent	e;
+
+    e = new DirectoryChangeEvent(this, getCurrentDirectory());
+    for (DirectoryChangeListener l: m_ChangeListeners.toArray(new DirectoryChangeListener[0]))
+      l.directoryChanged(e);
   }
 }

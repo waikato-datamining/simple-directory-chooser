@@ -93,12 +93,14 @@ public class IconManager {
    */
   public IconManager(String sets) {
     String	msg;
+    Properties  props;
 
     initializeMembers();
-    msg = checkSets(m_Sets);
+    props = loadProperties(sets);
+    msg   = checkSets(props);
     if (msg != null)
       throw new IllegalStateException("Icon sets definition invalid:\n" + msg);
-    m_Sets = loadProperties(sets);
+    m_Sets = props;
     initializeActiveSet();
   }
 

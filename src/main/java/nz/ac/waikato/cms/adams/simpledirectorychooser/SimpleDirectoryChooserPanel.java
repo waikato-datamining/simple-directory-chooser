@@ -20,9 +20,10 @@
 
 package nz.ac.waikato.cms.adams.simpledirectorychooser;
 
-import nz.ac.waikato.cms.adams.simpledirectorychooser.tree.DirectoryTree;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.core.SimplePanel;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.core.SimpleScrollPane;
+import nz.ac.waikato.cms.adams.simpledirectorychooser.events.DirectoryChangeListener;
+import nz.ac.waikato.cms.adams.simpledirectorychooser.tree.DirectoryTree;
 
 import java.awt.BorderLayout;
 import java.io.File;
@@ -64,5 +65,23 @@ public class SimpleDirectoryChooserPanel
    */
   public File getCurrentDirectory() {
     return m_Tree.getCurrentDirectory();
+  }
+
+  /**
+   * Adds the listener for changes in the selected directory.
+   *
+   * @param l		the listener to add
+   */
+  public void addChangeListener(DirectoryChangeListener l) {
+    m_Tree.addChangeListener(l);
+  }
+
+  /**
+   * Removes the listener for changes in the selected directory.
+   *
+   * @param l		the listener to remove
+   */
+  public void removeChangeListener(DirectoryChangeListener l) {
+    m_Tree.removeChangeListener(l);
   }
 }
