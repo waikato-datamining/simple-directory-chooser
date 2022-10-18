@@ -245,6 +245,34 @@ public class DirectoryTree
   }
 
   /**
+   * Makes sure that the specified file is viewable, and
+   * not hidden.
+   *
+   * @param f  a File object
+   */
+  public void ensureFileIsVisible(File f) {
+    DirectoryNode	node;
+    TreePath		path;
+
+    node = expandDirectory(f);
+    if (node != null) {
+      path = new TreePath(node.getPath());
+      scrollPathToVisible(path);
+    }
+  }
+
+  /**
+   * Tells the UI to rescan its files list from the current directory.
+   */
+  public void rescanCurrentDirectory() {
+    DirectoryNode 	node;
+
+    node = expandDirectory(getCurrentDirectory());
+    node.reset();
+    node.expandIfNecessary();
+  }
+
+  /**
    * Returns the current directory.
    *
    * @return		the directory
