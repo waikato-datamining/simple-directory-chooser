@@ -94,12 +94,35 @@ public class IconManager {
   public IconManager(String sets) {
     String	msg;
 
-    m_Cache = new HashMap<>();
-    m_Sets  = loadProperties(sets);
+    initializeMembers();
     msg = checkSets(m_Sets);
     if (msg != null)
       throw new IllegalStateException("Icon sets definition invalid:\n" + msg);
+    m_Sets = loadProperties(sets);
     initializeActiveSet();
+  }
+
+  /**
+   * Initializes the manager with the properties defining the sets.
+   *
+   * @param props	the properties with the sets
+   */
+  public IconManager(Properties props) {
+    String	msg;
+
+    initializeMembers();
+    msg = checkSets(props);
+    if (msg != null)
+      throw new IllegalStateException("Icon sets definition invalid:\n" + msg);
+    m_Sets = props;
+    initializeActiveSet();
+  }
+
+  /**
+   * Initializes members
+   */
+  protected void initializeMembers() {
+    m_Cache = new HashMap<>();
   }
 
   /**
