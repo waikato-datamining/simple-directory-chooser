@@ -20,8 +20,11 @@
 
 package nz.ac.waikato.cms.adams.simpledirectorychooser.icons;
 
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
+import javax.swing.filechooser.FileSystemView;
 import java.awt.Image;
+import java.io.File;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -77,7 +80,10 @@ public class IconManager {
   protected Properties m_ActiveSet;
 
   /** the icon cache. */
-  protected Map<String, ImageIcon> m_Cache;
+  protected Map<String, Icon> m_Cache;
+
+  /** the filesystem view. */
+  protected FileSystemView m_View;
 
   /**
    * Initializes the manager with the predefined icon sets.
@@ -257,13 +263,35 @@ public class IconManager {
   }
 
   /**
+   * Returns the file system view object in use.
+   *
+   * @return		the view object
+   */
+  protected FileSystemView getView() {
+    if (m_View == null)
+      m_View = FileSystemView.getFileSystemView();
+    return m_View;
+  }
+
+  /**
+   * Scales the icon to the specified size.
+   *
+   * @param icon 	the icon to scale
+   * @param size 	the size to scale to
+   * @return		the scaled image
+   */
+  public static ImageIcon scale(ImageIcon icon, int size) {
+    return new ImageIcon(icon.getImage().getScaledInstance(size, size, Image.SCALE_SMOOTH));
+  }
+
+  /**
    * Loads the icon.
    *
    * @param filename	the icon to load
    * @return		the icon, null if failed to load
    */
-  protected ImageIcon loadIcon(String filename) {
-    ImageIcon	result;
+  protected Icon loadIcon(String filename) {
+    Icon	result;
     int		size;
 
     result = null;
@@ -275,7 +303,7 @@ public class IconManager {
       size = getIconSize();
       try {
 	result = new ImageIcon(ClassLoader.getSystemClassLoader().getResource(filename));
-	result = new ImageIcon(result.getImage().getScaledInstance(size, size, Image.SCALE_SMOOTH));
+	result = scale((ImageIcon) result, size);
 	m_Cache.put(filename, result);
       }
       catch (Exception e) {
@@ -294,8 +322,8 @@ public class IconManager {
    * @param key		the key for the icon
    * @return		the icon, null if not available
    */
-  protected ImageIcon getIcon(String key) {
-    ImageIcon	result;
+  protected Icon getIcon(String key) {
+    Icon	result;
     String	dir;
     String	name;
     String	filename;
@@ -318,7 +346,7 @@ public class IconManager {
    *
    * @return		the icon, null if none available
    */
-  public ImageIcon getDriveIcon() {
+  public Icon getDriveIcon() {
     return getIcon(KEY_DRIVE);
   }
 
@@ -327,7 +355,7 @@ public class IconManager {
    *
    * @return		the icon, null if none available
    */
-  public ImageIcon getOpenIcon() {
+  public Icon getOpenIcon() {
     return getIcon(KEY_OPEN);
   }
 
@@ -336,7 +364,7 @@ public class IconManager {
    *
    * @return		the icon, null if none available
    */
-  public ImageIcon getClosedIcon() {
+  public Icon getClosedIcon() {
     return getIcon(KEY_CLOSED);
   }
 
@@ -352,5 +380,28 @@ public class IconManager {
     catch (Exception e) {
       return DEFAULT_ICON_SIZE;
     }
+  }
+
+  /**
+   * Returns the system icon (if any) for the directory.
+   *
+   * @param dir		the directory to get the icon for
+   * @return		the icon, null if none available
+   */
+  public Icon getSystemIcon(File dir) {
+    Icon	result;
+    String	path;
+
+    path = dir.getAbsolutePath();
+    if (m_Cache.containsKey(path))
+      return m_Cache.get(path);
+
+    result = getView().getSystemIcon(dir);
+    if (result instanceof ImageIcon)
+      result = scale((ImageIcon) result, getIconSize());
+
+    m_Cache.put(path, result);
+
+    return result;
   }
 }

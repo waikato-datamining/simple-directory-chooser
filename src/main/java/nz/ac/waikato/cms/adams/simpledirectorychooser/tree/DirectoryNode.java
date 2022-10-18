@@ -88,30 +88,18 @@ public class DirectoryNode
   }
 
   /**
-   * Returns whether the directory is a drive (under Windows).
+   * Returns the directory/drive name, not the full path.
    *
-   * @return		true if drive
+   * @return		the directory/drive name
    */
-  public boolean isDrive() {
-    return getView().isDrive(getDirectory());
-  }
+  public String getName() {
+    File	dir;
 
-  /**
-   * Returns whether the directory is a root directory.
-   *
-   * @return		true if root dir
-   */
-  public boolean isRootDir() {
-    return getView().isRoot(getDirectory());
-  }
-
-  /**
-   * Returns whether the directory is a file system root directory.
-   *
-   * @return		true if root dir
-   */
-  public boolean isFileSystemRootDir() {
-    return getView().isFileSystemRoot(getDirectory());
+    dir = getDirectory();
+    if (getView().isDrive(dir))
+      return dir.getAbsolutePath();
+    else
+      return dir.getName();
   }
 
   /**
@@ -176,6 +164,6 @@ public class DirectoryNode
    * @return		the dir name
    */
   public String toString() {
-    return getDirectory().getName();
+    return getView().getSystemDisplayName(getDirectory());
   }
 }

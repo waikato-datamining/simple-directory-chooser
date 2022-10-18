@@ -22,10 +22,11 @@ package nz.ac.waikato.cms.adams.simpledirectorychooser.tree;
 
 import nz.ac.waikato.cms.adams.simpledirectorychooser.icons.IconManager;
 
-import javax.swing.ImageIcon;
+import javax.swing.Icon;
 import javax.swing.JTree;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import java.awt.Component;
+import java.awt.Dimension;
 
 /**
  * Renderer for the directory tree.
@@ -61,7 +62,12 @@ public class DirectoryTreeCellRenderer
    * @return		the component for rendering
    */
   public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-    ImageIcon 	icon;
+    Icon 		icon;
+    DirectoryNode 	node;
+    int			height;
+    int			width;
+    Dimension 		minimum;
+    Dimension		preferred;
 
     super.getTreeCellRendererComponent(tree, value, sel, expanded, false, row, hasFocus);
 
@@ -69,6 +75,11 @@ public class DirectoryTreeCellRenderer
       icon = m_IconManager.getOpenIcon();
     else
       icon = m_IconManager.getClosedIcon();
+
+    if ((icon == null) && (value instanceof DirectoryNode)) {
+      node = (DirectoryNode) value;
+      icon = ((DirectoryTree) tree).getIconManager().getSystemIcon(node.getDirectory());
+    }
 
     if (icon != null)
       setIcon(icon);

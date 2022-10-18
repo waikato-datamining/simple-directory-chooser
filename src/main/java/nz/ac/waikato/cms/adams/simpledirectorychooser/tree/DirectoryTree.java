@@ -20,6 +20,7 @@
 
 package nz.ac.waikato.cms.adams.simpledirectorychooser.tree;
 
+import nz.ac.waikato.cms.adams.simpledirectorychooser.core.OS;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.events.DirectoryChangeEvent;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.events.DirectoryChangeListener;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.icons.IconManager;
@@ -35,6 +36,7 @@ import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -102,8 +104,13 @@ public class DirectoryTree
   protected void buildTree() {
     DefaultTreeModel  	model;
     File[]		roots;
+    List<File>		allRoots;
 
-    roots = FileSystemView.getFileSystemView().getRoots();
+    allRoots = new ArrayList<>(Arrays.asList(FileSystemView.getFileSystemView().getRoots()));
+    if (OS.isWindows())
+      allRoots.addAll(Arrays.asList(File.listRoots()));
+
+    roots = allRoots.toArray(new File[0]);
     if (roots.length == 1)
       model = new DefaultTreeModel(new DirectoryNode(roots[0], m_ShowHidden));
     else
@@ -182,6 +189,9 @@ public class DirectoryTree
    */
   protected String[] toPathElements(File value) {
     List<String> 	result;
+    FileSystemView	view;
+
+    view = FileSystemView.getFileSystemView();
 
     // file provided?
     if (!value.isDirectory())
@@ -191,8 +201,14 @@ public class DirectoryTree
     while (value != null) {
       if (!value.getName().isEmpty())
 	result.add(0, value.getName());
+      else if (view.isDrive(value))
+	result.add(0, value.getAbsolutePath());
       value = value.getParentFile();
     }
+
+    // "." at the end?
+    if ((result.size() > 0) && result.get(result.size() - 1).equals("."))
+      result.remove(result.size() - 1);
 
     return result.toArray(new String[0]);
   }
@@ -212,7 +228,7 @@ public class DirectoryTree
 
     result = null;
     root   = (ExpandableNode) getModel().getRoot();
-    parts  = toPathElements(value);
+    parts  = toPathElements(value.getAbsoluteFile());
     node   = root;
     for (i = 0; i < parts.length; i++) {
       node = node.expand(parts[i]);

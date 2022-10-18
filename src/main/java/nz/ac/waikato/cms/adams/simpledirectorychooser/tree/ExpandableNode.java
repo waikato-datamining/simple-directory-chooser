@@ -38,7 +38,7 @@ public abstract class ExpandableNode
   /**
    * Expands specified directory (if available).
    *
-   * @param dir 	the directory to expand
+   * @param dir 	the directory to expand (just the directory name)
    * @return		the directory node if successfully expanded
    */
   public DirectoryNode expand(String dir) {
@@ -51,7 +51,7 @@ public abstract class ExpandableNode
     for (i = 0; i < getChildCount(); i++) {
       if (getChildAt(i) instanceof DirectoryNode) {
         child = (DirectoryNode) getChildAt(i);
-        if (child.getDirectory().getName().equals(dir)) {
+        if (child.getName().equals(dir)) {
           result = child;
           break;
         }
