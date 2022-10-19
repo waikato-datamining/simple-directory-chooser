@@ -28,21 +28,21 @@ Use the following dependency in your `pom.xml`:
 
 * Panel
 
-  [!Panel under Linux (default icons)](src/site/resources/panel-default-linux.png)
+  ![Panel under Linux (default icons)](src/site/resources/panel-default-linux.png)
 
 
 * Dialog
 
-  [!Dialog under Linux (default icons)](src/site/resources/dialog-default-linux.png)
+  ![Dialog under Linux (default icons)](src/site/resources/dialog-default-linux.png)
 
 
 ### Windows
 
 * Panel
 
-  [!Panel under Windows (default icons)](src/site/resources/panel-default-linux.png)
+  ![Panel under Windows (default icons)](src/site/resources/panel-default-linux.png)
 
 
 * Dialog
 
-  [!Dialog under Windows (default icons)](src/site/resources/dialog-default-linux.png)
+  ![Dialog under Windows (default icons)](src/site/resources/dialog-default-linux.png)
