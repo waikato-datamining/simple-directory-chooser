@@ -1,5 +1,5 @@
 /*
- * SimpleDirectoryChooserDialog.java
+ * SimpleDirectoryChooser.java
  * Copyright (C) 2022 University of Waikato, Hamilton, New Zealand
  */
 
