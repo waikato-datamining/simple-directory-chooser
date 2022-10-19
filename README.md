@@ -17,7 +17,7 @@ Use the following dependency in your `pom.xml`:
     <dependency>
       <groupId>nz.ac.waikato.cms.adams</groupId>
       <artifactId>simple-directory-chooser</artifactId>
-      <version>0.0.1-SNAPSHOT</version>
+      <version>0.0.1</version>
     </dependency>
 ```
 
