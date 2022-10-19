@@ -18,7 +18,9 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 import javax.swing.JToolBar;
 import javax.swing.TransferHandler;
 import javax.swing.event.EventListenerList;
@@ -37,6 +39,8 @@ import java.awt.Window;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.InputEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
@@ -83,6 +87,12 @@ public class SimpleDirectoryChooser
 
   /** the panel with dirs and accessory. */
   protected JPanel m_PanelContent;
+
+  /** the label for the text field with current directory. */
+  protected JLabel m_LabelDirectory;
+
+  /** the text field with the current directory. */
+  protected JTextField m_TextDirectory;
 
   /** the panel with the buttons. */
   protected JPanel m_PanelButtons;
@@ -156,6 +166,8 @@ public class SimpleDirectoryChooser
    * Initializes the widgets.
    */
   protected void initWidgets() {
+    JPanel 	panelDir;
+
     setLayout(new BorderLayout());
 
     m_PanelContent = new JPanel(new BorderLayout());
@@ -168,6 +180,27 @@ public class SimpleDirectoryChooser
     m_ButtonCancel.addActionListener((ActionEvent e) -> cancelSelection());
     m_Accessory     = null;
     m_PanelContent.add(m_PanelDirs, BorderLayout.CENTER);
+
+    panelDir = new JPanel(new BorderLayout(5, 0));
+    panelDir.setBorder(BorderFactory.createEmptyBorder(5, 0, 0, 0));
+    m_PanelContent.add(panelDir, BorderLayout.SOUTH);
+    m_TextDirectory = new JTextField(20);
+    m_TextDirectory.addKeyListener(new KeyAdapter() {
+      @Override
+      public void keyPressed(KeyEvent e) {
+	super.keyPressed(e);
+	if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+	  File dir = new File(m_TextDirectory.getText());
+	  if (dir.exists() && dir.isDirectory())
+	    setCurrentDirectory(dir);
+	}
+      }
+    });
+    panelDir.add(m_TextDirectory, BorderLayout.CENTER);
+    m_LabelDirectory = new JLabel("Directory");
+    m_LabelDirectory.setDisplayedMnemonic('D');
+    m_LabelDirectory.setLabelFor(m_TextDirectory);
+    panelDir.add(m_LabelDirectory, BorderLayout.WEST);
 
     m_PanelWidgets  = new JPanel(new BorderLayout());
     m_PanelWidgets.add(m_PanelContent, BorderLayout.CENTER);
@@ -1314,6 +1347,10 @@ public class SimpleDirectoryChooser
    */
   public void directoryChanged(DirectoryChangeEvent e) {
     firePropertyChange(JFileChooser.DIRECTORY_CHANGED_PROPERTY, OS.fileToString(m_PanelDirs.getLastDirectory()), OS.fileToString(m_PanelDirs.getCurrentDirectory()));
+    if (getCurrentDirectory() == null)
+      m_TextDirectory.setText("");
+    else
+      m_TextDirectory.setText(getCurrentDirectory().getAbsolutePath());
     updateButtons();
   }
 
