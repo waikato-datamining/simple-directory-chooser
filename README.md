@@ -21,6 +21,13 @@ Use the following dependency in your `pom.xml`:
     </dependency>
 ```
 
+## Examples
+
+The following classes demonstrate the use of the widgets:
+
+* [PanelExample.java](src/main/java/nz/ac/waikato/cms/adams/simpledirectorychooser/examples/PanelExample.java)
+* [SimpleDirectoryChooserExample.java](src/main/java/nz/ac/waikato/cms/adams/simpledirectorychooser/examples/SimpleDirectoryChooserExample.java)
+
 
 ## Screenshots
 
