@@ -15,6 +15,7 @@ import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Window;
+import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -134,6 +135,26 @@ public class GUIHelper {
       System.err.println("Failed to load icon: " + resource);
       e.printStackTrace();
     }
+
+    return result;
+  }
+
+  /**
+   * Checks whether the mouse event is a right-click event.
+   * Alt+Left-Click is also interpreted as right-click.
+   *
+   * @param e		the event
+   * @return		true if a right-click event
+   */
+  public static boolean isRightClick(MouseEvent e) {
+    boolean	result;
+
+    result = false;
+
+    if ((e.getButton() == MouseEvent.BUTTON3) && (e.getClickCount() == 1))
+      result = true;
+    else if ((e.getButton() == MouseEvent.BUTTON1) && e.isAltDown() && !e.isShiftDown() && !e.isControlDown())
+      result = true;
 
     return result;
   }

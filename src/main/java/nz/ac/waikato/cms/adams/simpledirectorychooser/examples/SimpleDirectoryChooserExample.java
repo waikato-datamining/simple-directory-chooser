@@ -19,6 +19,7 @@ public class SimpleDirectoryChooserExample {
 
   public static void main(String[] args) throws Exception {
     SimpleDirectoryChooser fileChooser = new SimpleDirectoryChooser();
+    fileChooser.setPopupMenuEnabled(true);
     if (args.length > 0)
       fileChooser.setCurrentDirectory(new File(args[0]));
     else

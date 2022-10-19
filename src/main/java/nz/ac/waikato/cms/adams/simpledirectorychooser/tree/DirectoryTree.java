@@ -5,11 +5,15 @@
 
 package nz.ac.waikato.cms.adams.simpledirectorychooser.tree;
 
+import nz.ac.waikato.cms.adams.simpledirectorychooser.core.GUIHelper;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.core.OS;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.events.DirectoryChangeEvent;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.events.DirectoryChangeListener;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.icons.IconManager;
 
+import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
+import javax.swing.JPopupMenu;
 import javax.swing.JTree;
 import javax.swing.event.TreeExpansionEvent;
 import javax.swing.event.TreeSelectionEvent;
@@ -19,6 +23,9 @@ import javax.swing.filechooser.FileSystemView;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
+import java.awt.event.ActionEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,6 +57,12 @@ public class DirectoryTree
   /** the icon manager. */
   protected IconManager m_IconManager;
 
+  /** whether to allow popup menu. */
+  protected boolean m_PopupMenuEnabled;
+
+  /** the popup menu customizer. */
+  protected DirectoryTreePopupMenuCustomizer m_PopupMenuCustomizer;
+
   /**
    * Initializes the tree. Does not show hidden dirs.
    */
@@ -75,10 +88,29 @@ public class DirectoryTree
    */
   public DirectoryTree(boolean showHidden, IconManager iconManager, FileSystemView view) {
     super();
+
     initializeMembers();
+
     m_ShowHidden = showHidden;
     m_View       = view;
     setIconManager(iconManager);
+
+    addTreeWillExpandListener(this);
+    addTreeSelectionListener(this);
+    addMouseListener(new MouseAdapter() {
+      @Override
+      public void mouseClicked(MouseEvent e) {
+	super.mouseClicked(e);
+	if (GUIHelper.isRightClick(e)) {
+	  if (m_PopupMenuEnabled) {
+	    JPopupMenu menu = createPopupMenu();
+	    if (menu != null)
+	      menu.show(DirectoryTree.this, e.getX(), e.getY());
+	  }
+	}
+      }
+    });
+
     buildTree();
   }
 
@@ -86,11 +118,13 @@ public class DirectoryTree
    * Initializes the members.
    */
   protected void initializeMembers() {
-    m_CurrentDir      = null;
-    m_ChangeListeners = new HashSet<>();
-    m_ShowHidden      = false;
-    m_View            = null;
-    m_IconManager     = new IconManager();
+    m_CurrentDir          = null;
+    m_ChangeListeners     = new HashSet<>();
+    m_ShowHidden          = false;
+    m_View                = null;
+    m_IconManager         = new IconManager();
+    m_PopupMenuEnabled    = false;
+    m_PopupMenuCustomizer = null;
     setCellRenderer(new DirectoryTreeCellRenderer());
   }
 
@@ -116,9 +150,62 @@ public class DirectoryTree
     setRootVisible(roots.length == 1);
     setShowsRootHandles(true);
     setModel(model);
+  }
 
-    addTreeWillExpandListener(this);
-    addTreeSelectionListener(this);
+  /**
+   * Creates the popup menu.
+   *
+   * @return		the popup menu, null if none to show
+   */
+  protected JPopupMenu createPopupMenu() {
+    JPopupMenu	result;
+    JMenuItem	menuitem;
+
+    result = new JPopupMenu();
+
+    menuitem = new JMenuItem("Refresh");
+    menuitem.addActionListener((ActionEvent e) -> refresh());
+    result.add(menuitem);
+
+    menuitem = new JMenuItem("New folder...");
+    menuitem.addActionListener((ActionEvent e) -> newFolder(false));
+    result.add(menuitem);
+
+    if (m_PopupMenuCustomizer != null)
+      result = m_PopupMenuCustomizer.customizeMenu(this, result);
+
+    return result;
+  }
+
+  /**
+   * Let's the user create a new folder.
+   *
+   * @param grabFocus 	whether to grab the focus
+   */
+  public void newFolder(boolean grabFocus) {
+    String	folderName;
+    File	folder;
+
+    folderName = JOptionPane.showInputDialog(this, "Please enter name for new folder:", "New folder", JOptionPane.QUESTION_MESSAGE);
+    if (folderName == null) {
+      if (grabFocus)
+        requestFocusInWindow();
+      return;
+    }
+
+    folder = new File(getCurrentDirectory(), folderName);
+    try {
+      if (!folder.mkdir())
+	JOptionPane.showMessageDialog(this, "Failed to create folder:\n" + folder, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    catch (Exception e) {
+      JOptionPane.showMessageDialog(this, "Failed to create folder:\n" + folder + "\nDue to:\n" + e, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    refresh();
+    setCurrentDirectory(folder);
+    if (grabFocus)
+      requestFocusInWindow();
   }
 
   /**
@@ -274,6 +361,7 @@ public class DirectoryTree
     if (node != null) {
       m_CurrentDir = node.getDirectory();
       path = new TreePath(node.getPath());
+      node.expandIfNecessary();
       setSelectionPath(path);
       scrollPathToVisible(path);
     }
@@ -384,5 +472,41 @@ public class DirectoryTree
     e = new DirectoryChangeEvent(this, getCurrentDirectory());
     for (DirectoryChangeListener l: m_ChangeListeners.toArray(new DirectoryChangeListener[0]))
       l.directoryChanged(e);
+  }
+
+  /**
+   * Sets the customizer for the popup menu.
+   *
+   * @param value	the customizer, null to remove
+   */
+  public void setPopupMenuCustomizer(DirectoryTreePopupMenuCustomizer value) {
+    m_PopupMenuCustomizer = value;
+  }
+
+  /**
+   * Returns the customizer for the popup menu.
+   *
+   * @return		the customizer, null if none used
+   */
+  public DirectoryTreePopupMenuCustomizer getPopupMenuCustomizer() {
+    return m_PopupMenuCustomizer;
+  }
+
+  /**
+   * Sets whether the popup menu is enabled.
+   *
+   * @param value	true to enable
+   */
+  public void setPopupMenuEnabled(boolean value) {
+    m_PopupMenuEnabled = value;
+  }
+
+  /**
+   * Returns whether the popup menu is enabled.
+   *
+   * @return		true if enabled
+   */
+  public boolean isPopupMenuEnabled() {
+    return m_PopupMenuEnabled;
   }
 }

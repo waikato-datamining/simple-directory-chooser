@@ -6,6 +6,7 @@
 package nz.ac.waikato.cms.adams.simpledirectorychooser.tree;
 
 import javax.swing.filechooser.FileSystemView;
+import javax.swing.tree.TreePath;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -155,6 +156,8 @@ public class DirectoryNode
     // add children
     for (File dir: dirs)
       add(new DirectoryNode(getOwner(), dir, getShowHidden()));
+
+    getOwner().expandPath(new TreePath(getPath()));
   }
 
   /**

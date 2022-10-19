@@ -9,6 +9,7 @@ import nz.ac.waikato.cms.adams.simpledirectorychooser.core.GUIHelper;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.events.DirectoryChangeEvent;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.events.DirectoryChangeListener;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.icons.IconManager;
+import nz.ac.waikato.cms.adams.simpledirectorychooser.tree.DirectoryTreePopupMenuCustomizer;
 
 import javax.swing.BorderFactory;
 import javax.swing.Icon;
@@ -203,27 +204,7 @@ public class SimpleDirectoryChooser
    * Let's the user create a new folder.
    */
   protected void newFolder() {
-    String	folderName;
-    File	folder;
-
-    folderName = JOptionPane.showInputDialog("Please enter name for new folder:");
-    if (folderName == null) {
-      m_PanelDirs.requestFocusInWindow();
-      return;
-    }
-
-    folder = new File(getCurrentDirectory(), folderName);
-    try {
-      if (!folder.mkdir())
-	JOptionPane.showMessageDialog(m_Dialog, "Failed to create folder:\n" + folder, "Error", JOptionPane.ERROR_MESSAGE);
-    }
-    catch (Exception e) {
-      JOptionPane.showMessageDialog(m_Dialog, "Failed to create folder:\n" + folder + "\nDue to:\n" + e, "Error", JOptionPane.ERROR_MESSAGE);
-    }
-
-    refresh();
-    setCurrentDirectory(folder);
-    m_PanelDirs.requestFocusInWindow();
+    m_PanelDirs.newFolder(true);
   }
 
   /**
@@ -1324,5 +1305,41 @@ public class SimpleDirectoryChooser
    */
   public void directoryChanged(DirectoryChangeEvent e) {
     updateButtons();
+  }
+
+  /**
+   * Sets the customizer for the popup menu.
+   *
+   * @param value	the customizer, null to remove
+   */
+  public void setPopupMenuCustomizer(DirectoryTreePopupMenuCustomizer value) {
+    m_PanelDirs.setPopupMenuCustomizer(value);
+  }
+
+  /**
+   * Returns the customizer for the popup menu.
+   *
+   * @return		the customizer, null if none used
+   */
+  public DirectoryTreePopupMenuCustomizer getPopupMenuCustomizer() {
+    return m_PanelDirs.getPopupMenuCustomizer();
+  }
+
+  /**
+   * Sets whether the popup menu is enabled.
+   *
+   * @param value	true to enable
+   */
+  public void setPopupMenuEnabled(boolean value) {
+    m_PanelDirs.setPopupMenuEnabled(value);
+  }
+
+  /**
+   * Returns whether the popup menu is enabled.
+   *
+   * @return		true if enabled
+   */
+  public boolean isPopupMenuEnabled() {
+    return m_PanelDirs.isPopupMenuEnabled();
   }
 }

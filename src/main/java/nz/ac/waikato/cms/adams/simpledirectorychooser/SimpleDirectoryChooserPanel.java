@@ -10,6 +10,7 @@ import nz.ac.waikato.cms.adams.simpledirectorychooser.core.SimpleScrollPane;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.events.DirectoryChangeListener;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.icons.IconManager;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.tree.DirectoryTree;
+import nz.ac.waikato.cms.adams.simpledirectorychooser.tree.DirectoryTreePopupMenuCustomizer;
 
 import javax.swing.filechooser.FileSystemView;
 import java.awt.BorderLayout;
@@ -155,5 +156,50 @@ public class SimpleDirectoryChooserPanel
    */
   public boolean requestFocusInWindow() {
     return m_Tree.requestFocusInWindow();
+  }
+
+  /**
+   * Sets the customizer for the popup menu.
+   *
+   * @param value	the customizer, null to remove
+   */
+  public void setPopupMenuCustomizer(DirectoryTreePopupMenuCustomizer value) {
+    m_Tree.setPopupMenuCustomizer(value);
+  }
+
+  /**
+   * Returns the customizer for the popup menu.
+   *
+   * @return		the customizer, null if none used
+   */
+  public DirectoryTreePopupMenuCustomizer getPopupMenuCustomizer() {
+    return m_Tree.getPopupMenuCustomizer();
+  }
+
+  /**
+   * Sets whether the popup menu is enabled.
+   *
+   * @param value	true to enable
+   */
+  public void setPopupMenuEnabled(boolean value) {
+    m_Tree.setPopupMenuEnabled(value);
+  }
+
+  /**
+   * Returns whether the popup menu is enabled.
+   *
+   * @return		true if enabled
+   */
+  public boolean isPopupMenuEnabled() {
+    return m_Tree.isPopupMenuEnabled();
+  }
+
+  /**
+   * Let's the user create a new folder.
+   *
+   * @param grabFocus 	whether to grab the focus
+   */
+  public void newFolder(boolean grabFocus) {
+    m_Tree.newFolder(grabFocus);
   }
 }
