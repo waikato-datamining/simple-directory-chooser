@@ -4,6 +4,8 @@
  */
 package nz.ac.waikato.cms.adams.simpledirectorychooser.core;
 
+import java.io.File;
+
 /**
  * Helper class for operating system related stuff.
  *
@@ -79,8 +81,8 @@ public class OS {
   public synchronized static boolean isAndroid() {
     if (m_IsAndroid == null) {
       m_IsAndroid = System.getProperty("java.vm.vendor").toLowerCase().contains("android")
-        || System.getProperty("java.vendor").toLowerCase().contains("android")
-        || System.getProperty("java.vendor.url").toLowerCase().contains("android");
+	  || System.getProperty("java.vendor").toLowerCase().contains("android")
+	  || System.getProperty("java.vendor.url").toLowerCase().contains("android");
     }
 
     return m_IsAndroid;
@@ -95,15 +97,15 @@ public class OS {
   public synchronized static boolean isOS(OperatingSystems os) {
     switch (os) {
       case LINUX:
-        return isLinux();
+	return isLinux();
       case MAC:
-        return isMac();
+	return isMac();
       case ANDROID:
-        return isAndroid();
+	return isAndroid();
       case WINDOWS:
-        return isWindows();
+	return isWindows();
       default:
-        throw new IllegalStateException("Unhandled OS: " + os);
+	throw new IllegalStateException("Unhandled OS: " + os);
     }
   }
 
@@ -122,5 +124,18 @@ public class OS {
       return 64;
     else
       throw new IllegalStateException("Cannot interpret 'os.arch' for bitness: " + arch);
+  }
+
+  /**
+   * Returns a string representation of the file. null if the file is null.
+   *
+   * @param f		the file to turn into a string
+   * @return		the string
+   */
+  public static String fileToString(File f) {
+    if (f == null)
+      return null;
+    else
+      return f.getAbsolutePath();
   }
 }

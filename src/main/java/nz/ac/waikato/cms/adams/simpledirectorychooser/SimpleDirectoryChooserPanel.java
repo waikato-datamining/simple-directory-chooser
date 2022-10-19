@@ -56,6 +56,15 @@ public class SimpleDirectoryChooserPanel
   }
 
   /**
+   * Returns the last directory.
+   *
+   * @return		the directory, can be null
+   */
+  public File getLastDirectory() {
+    return m_Tree.getLastDirectory();
+  }
+
+  /**
    * Refreshes the tree.
    */
   public void refresh() {

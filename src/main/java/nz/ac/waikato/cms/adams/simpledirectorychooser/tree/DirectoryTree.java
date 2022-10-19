@@ -45,6 +45,9 @@ public class DirectoryTree
   /** the current directory. */
   protected File m_CurrentDir;
 
+  /** the last directory. */
+  protected File m_LastDir;
+
   /** whether to show hidden dirs. */
   protected boolean m_ShowHidden;
 
@@ -119,6 +122,7 @@ public class DirectoryTree
    */
   protected void initializeMembers() {
     m_CurrentDir          = null;
+    m_LastDir             = null;
     m_ChangeListeners     = new HashSet<>();
     m_ShowHidden          = false;
     m_View                = null;
@@ -189,7 +193,7 @@ public class DirectoryTree
     folderName = JOptionPane.showInputDialog(this, "Please enter name for new folder:", "New folder", JOptionPane.QUESTION_MESSAGE);
     if (folderName == null) {
       if (grabFocus)
-        requestFocusInWindow();
+	requestFocusInWindow();
       return;
     }
 
@@ -359,6 +363,7 @@ public class DirectoryTree
 
     node = expandDirectory(value);
     if (node != null) {
+      m_LastDir    = m_CurrentDir;
       m_CurrentDir = node.getDirectory();
       path = new TreePath(node.getPath());
       node.expandIfNecessary();
@@ -398,10 +403,19 @@ public class DirectoryTree
   /**
    * Returns the current directory.
    *
-   * @return		the directory
+   * @return		the directory, can be null
    */
   public File getCurrentDirectory() {
     return m_CurrentDir;
+  }
+
+  /**
+   * Returns the last directory.
+   *
+   * @return		the directory, can be null
+   */
+  public File getLastDirectory() {
+    return m_LastDir;
   }
 
   /**

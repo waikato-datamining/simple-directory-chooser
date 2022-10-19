@@ -6,6 +6,7 @@
 package nz.ac.waikato.cms.adams.simpledirectorychooser;
 
 import nz.ac.waikato.cms.adams.simpledirectorychooser.core.GUIHelper;
+import nz.ac.waikato.cms.adams.simpledirectorychooser.core.OS;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.events.DirectoryChangeEvent;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.events.DirectoryChangeListener;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.icons.IconManager;
@@ -17,7 +18,6 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.TransferHandler;
@@ -80,6 +80,9 @@ public class SimpleDirectoryChooser
 
   /** the panel with the widgets. */
   protected JPanel m_PanelWidgets;
+
+  /** the panel with dirs and accessory. */
+  protected JPanel m_PanelContent;
 
   /** the panel with the buttons. */
   protected JPanel m_PanelButtons;
@@ -153,16 +156,22 @@ public class SimpleDirectoryChooser
    * Initializes the widgets.
    */
   protected void initWidgets() {
+    setLayout(new BorderLayout());
+
+    m_PanelContent = new JPanel(new BorderLayout());
+    m_PanelContent.setBorder(BorderFactory.createEmptyBorder(5, 5, 0, 5));
+
     m_PanelDirs     = new SimpleDirectoryChooserPanel();
-    m_PanelDirs.setBorder(BorderFactory.createEmptyBorder(5, 5, 5, 5));
     m_ButtonApprove = new JButton("Open");
     m_ButtonApprove.addActionListener((ActionEvent e) -> approveSelection());
     m_ButtonCancel  = new JButton("Cancel");
     m_ButtonCancel.addActionListener((ActionEvent e) -> cancelSelection());
     m_Accessory     = null;
+    m_PanelContent.add(m_PanelDirs, BorderLayout.CENTER);
 
     m_PanelWidgets  = new JPanel(new BorderLayout());
-    m_PanelWidgets.add(m_PanelDirs, BorderLayout.CENTER);
+    m_PanelWidgets.add(m_PanelContent, BorderLayout.CENTER);
+    add(m_PanelWidgets, BorderLayout.CENTER);
 
     m_PanelButtons  = new JPanel(new FlowLayout(FlowLayout.RIGHT));
     m_PanelButtons.add(m_ButtonApprove);
@@ -873,9 +882,9 @@ public class SimpleDirectoryChooser
    */
   public void setAccessory(JComponent newAccessory) {
     if (m_Accessory != null)
-      m_PanelWidgets.remove(m_Accessory);
+      m_PanelContent.remove(m_Accessory);
     m_Accessory = newAccessory;
-    m_PanelWidgets.add(m_Accessory, BorderLayout.EAST);
+    m_PanelContent.add(m_Accessory, BorderLayout.EAST);
   }
 
   /**
@@ -1304,6 +1313,7 @@ public class SimpleDirectoryChooser
    * @param e		the event
    */
   public void directoryChanged(DirectoryChangeEvent e) {
+    firePropertyChange(JFileChooser.DIRECTORY_CHANGED_PROPERTY, OS.fileToString(m_PanelDirs.getLastDirectory()), OS.fileToString(m_PanelDirs.getCurrentDirectory()));
     updateButtons();
   }
 
