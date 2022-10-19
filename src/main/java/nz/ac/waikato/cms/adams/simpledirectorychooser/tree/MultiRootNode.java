@@ -13,7 +13,7 @@ import java.io.File;
  * @author fracpete (fracpete at waikato dot ac dot nz)
  */
 public class MultiRootNode
-  extends ExpandableNode {
+    extends ExpandableNode {
 
   /** the default title. */
   public final static String DEFAULT_TITLE = "Computer";
@@ -21,25 +21,27 @@ public class MultiRootNode
   /**
    * Sets the root dirs to manage. Uses {@link #DEFAULT_TITLE} as title.
    *
+   * @param owner	the tree this node belongs to
    * @param roots	the roots
    * @param showHidden  whether to show hidden dirs
    */
-  public MultiRootNode(File[] roots, boolean showHidden) {
-    this(roots, DEFAULT_TITLE, showHidden);
+  public MultiRootNode(DirectoryTree owner, File[] roots, boolean showHidden) {
+    this(owner, roots, DEFAULT_TITLE, showHidden);
   }
 
   /**
    * Sets the root dirs to manage.
    *
+   * @param owner	the tree this node belongs to
    * @param roots	the roots
    * @param title 	the title to use for the node
    * @param showHidden  whether to show hidden dirs
    */
-  public MultiRootNode(File[] roots, String title, boolean showHidden) {
-    super();
+  public MultiRootNode(DirectoryTree owner, File[] roots, String title, boolean showHidden) {
+    super(owner);
     setUserObject(title);
     for (File root: roots)
-      add(new DirectoryNode(root, showHidden));
+      add(new DirectoryNode(owner, root, showHidden));
   }
 
   /**

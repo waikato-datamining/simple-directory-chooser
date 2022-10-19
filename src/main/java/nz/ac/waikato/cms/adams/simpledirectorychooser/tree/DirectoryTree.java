@@ -44,6 +44,12 @@ public class DirectoryTree
   /** the change listeners. */
   protected Set<DirectoryChangeListener> m_ChangeListeners;
 
+  /** the filesystem view. */
+  protected FileSystemView m_View;
+
+  /** the icon manager. */
+  protected IconManager m_IconManager;
+
   /**
    * Initializes the tree. Does not show hidden dirs.
    */
@@ -57,7 +63,7 @@ public class DirectoryTree
    * @param showHidden 	whether to show hidden dirs
    */
   public DirectoryTree(boolean showHidden) {
-    this(showHidden, new IconManager());
+    this(showHidden, new IconManager(), FileSystemView.getFileSystemView());
   }
 
   /**
@@ -65,11 +71,13 @@ public class DirectoryTree
    *
    * @param showHidden 	whether to show hidden dirs
    * @param iconManager the icon manager to use
+   * @param view	the view to use
    */
-  public DirectoryTree(boolean showHidden, IconManager iconManager) {
+  public DirectoryTree(boolean showHidden, IconManager iconManager, FileSystemView view) {
     super();
     initializeMembers();
     m_ShowHidden = showHidden;
+    m_View       = view;
     setIconManager(iconManager);
     buildTree();
   }
@@ -81,6 +89,9 @@ public class DirectoryTree
     m_CurrentDir      = null;
     m_ChangeListeners = new HashSet<>();
     m_ShowHidden      = false;
+    m_View            = null;
+    m_IconManager     = new IconManager();
+    setCellRenderer(new DirectoryTreeCellRenderer());
   }
 
   /**
@@ -97,9 +108,9 @@ public class DirectoryTree
 
     roots = allRoots.toArray(new File[0]);
     if (roots.length == 1)
-      model = new DefaultTreeModel(new DirectoryNode(roots[0], m_ShowHidden));
+      model = new DefaultTreeModel(new DirectoryNode(this, roots[0], m_ShowHidden));
     else
-      model = new DefaultTreeModel(new MultiRootNode(roots, m_ShowHidden));
+      model = new DefaultTreeModel(new MultiRootNode(this, roots, m_ShowHidden));
     ((ExpandableNode) model.getRoot()).expandIfNecessary();
 
     setRootVisible(roots.length == 1);
@@ -108,6 +119,26 @@ public class DirectoryTree
 
     addTreeWillExpandListener(this);
     addTreeSelectionListener(this);
+  }
+
+  /**
+   * Sets the file system view to use.
+   *
+   * @param value	the view object
+   */
+  public void setView(FileSystemView value) {
+    m_View = value;
+  }
+
+  /**
+   * Returns the file system view object in use.
+   *
+   * @return		the view object
+   */
+  public FileSystemView getView() {
+    if (m_View == null)
+      m_View = FileSystemView.getFileSystemView();
+    return m_View;
   }
 
   /**
@@ -148,8 +179,12 @@ public class DirectoryTree
     if ((e.getPath() != null) && (e.getPath().getLastPathComponent() instanceof DirectoryNode)) {
       node = (DirectoryNode) e.getPath().getLastPathComponent();
       m_CurrentDir = node.getDirectory();
-      notifyChangeListeners();
     }
+    else {
+      m_CurrentDir = null;
+    }
+
+    notifyChangeListeners();
   }
 
   /**
@@ -301,15 +336,16 @@ public class DirectoryTree
   }
 
   /**
-   * Sets the icon manager to use.
+   * Sets the icon manager to use. Also updates its file system view.
    *
    * @param value	the manager
    */
   public void setIconManager(IconManager value) {
     DirectoryTreeCellRenderer renderer;
 
-    renderer = new DirectoryTreeCellRenderer(value);
-    setCellRenderer(renderer);
+    m_IconManager = value;
+    m_IconManager.setView(getView());
+    refresh();
   }
 
   /**
@@ -318,7 +354,7 @@ public class DirectoryTree
    * @return		the manager
    */
   public IconManager getIconManager() {
-    return ((DirectoryTreeCellRenderer) getCellRenderer()).getIconManager();
+    return m_IconManager;
   }
 
   /**

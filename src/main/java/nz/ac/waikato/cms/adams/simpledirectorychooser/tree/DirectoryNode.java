@@ -19,9 +19,6 @@ import java.util.List;
 public class DirectoryNode
     extends ExpandableNode {
 
-  /** the filesystem view. */
-  protected FileSystemView m_View;
-
   /** whether to show hidden dirs. */
   protected boolean m_ShowHidden;
 
@@ -31,11 +28,12 @@ public class DirectoryNode
   /**
    * Initializes the node with the specified dir.
    *
+   * @param owner	the tree this node belongs to
    * @param dir		the directory to encapsulate
    * @param showHidden  whether to show hidden dirs
    */
-  public DirectoryNode(File dir, boolean showHidden) {
-    super();
+  public DirectoryNode(DirectoryTree owner, File dir, boolean showHidden) {
+    super(owner);
 
     m_Initialized = false;
     m_ShowHidden  = showHidden;
@@ -58,9 +56,7 @@ public class DirectoryNode
    * @return		the view object
    */
   protected FileSystemView getView() {
-    if (m_View == null)
-      m_View = FileSystemView.getFileSystemView();
-    return m_View;
+    return m_Owner.getView();
   }
 
   /**
@@ -70,6 +66,24 @@ public class DirectoryNode
    */
   public File getDirectory() {
     return (File) getUserObject();
+  }
+
+  /**
+   * Whether the directory represents the home directory.
+   *
+   * @return		true if home directory
+   */
+  public boolean isHomeDirectory() {
+    return new File(System.getProperty("user.home")).equals(getDirectory());
+  }
+
+  /**
+   * Whether the directory represents a file system root.
+   *
+   * @return		true if file system root
+   */
+  public boolean isFileSystemRoot() {
+    return getView().isFileSystemRoot(getDirectory());
   }
 
   /**
@@ -140,7 +154,7 @@ public class DirectoryNode
 
     // add children
     for (File dir: dirs)
-      add(new DirectoryNode(dir, getShowHidden()));
+      add(new DirectoryNode(getOwner(), dir, getShowHidden()));
   }
 
   /**

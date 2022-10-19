@@ -11,6 +11,7 @@ import nz.ac.waikato.cms.adams.simpledirectorychooser.events.DirectoryChangeList
 import nz.ac.waikato.cms.adams.simpledirectorychooser.icons.IconManager;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.tree.DirectoryTree;
 
+import javax.swing.filechooser.FileSystemView;
 import java.awt.BorderLayout;
 import java.io.File;
 
@@ -51,6 +52,13 @@ public class SimpleDirectoryChooserPanel
    */
   public File getCurrentDirectory() {
     return m_Tree.getCurrentDirectory();
+  }
+
+  /**
+   * Refreshes the tree.
+   */
+  public void refresh() {
+    m_Tree.refresh();
   }
 
   /**
@@ -122,5 +130,30 @@ public class SimpleDirectoryChooserPanel
    */
   public void rescanCurrentDirectory() {
     m_Tree.rescanCurrentDirectory();
+  }
+
+  /**
+   * Sets the file system view to use.
+   *
+   * @param value	the view object
+   */
+  public void setView(FileSystemView value) {
+    m_Tree.setView(value);
+  }
+
+  /**
+   * Returns the file system view object in use.
+   *
+   * @return		the view object
+   */
+  public FileSystemView getView() {
+    return m_Tree.getView();
+  }
+
+  /**
+   * Requests the focus for the tree.
+   */
+  public boolean requestFocusInWindow() {
+    return m_Tree.requestFocusInWindow();
   }
 }

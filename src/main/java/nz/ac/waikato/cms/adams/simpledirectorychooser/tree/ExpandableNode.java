@@ -13,7 +13,23 @@ import javax.swing.tree.DefaultMutableTreeNode;
  * @author fracpete (fracpete at waikato dot ac dot nz)
  */
 public abstract class ExpandableNode
-  extends DefaultMutableTreeNode {
+    extends DefaultMutableTreeNode {
+
+  /** the owner. */
+  protected DirectoryTree m_Owner;
+
+  /**
+   * Initializes the node.
+   *
+   * @param owner	the tree this node belongs to
+   */
+  protected ExpandableNode(DirectoryTree owner) {
+    m_Owner = owner;
+  }
+
+  public DirectoryTree getOwner() {
+    return m_Owner;
+  }
 
   /**
    * Expands the node if necessary
@@ -35,11 +51,11 @@ public abstract class ExpandableNode
 
     for (i = 0; i < getChildCount(); i++) {
       if (getChildAt(i) instanceof DirectoryNode) {
-        child = (DirectoryNode) getChildAt(i);
-        if (child.getName().equals(dir)) {
-          result = child;
-          break;
-        }
+	child = (DirectoryNode) getChildAt(i);
+	if (child.getName().equals(dir)) {
+	  result = child;
+	  break;
+	}
       }
     }
 

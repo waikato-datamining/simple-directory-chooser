@@ -5,11 +5,19 @@
 
 package nz.ac.waikato.cms.adams.simpledirectorychooser.core;
 
+import javax.imageio.ImageIO;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dialog;
 import java.awt.Frame;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Window;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 /**
  * GUI related helper functions.
@@ -76,5 +84,57 @@ public class GUIHelper {
    */
   public static Window getParentWindow(Component comp) {
     return (Window) getParent((Container) comp, Window.class);
+  }
+
+  /**
+   * Writes the icon as PNG to the specified file.
+   *
+   * @param icon	the icon to output
+   * @param filename	the filename to save it under
+   * @throws IOException        if writing fails
+   */
+  public static void saveIconAsPng(Icon icon, String filename) throws IOException {
+    BufferedImage image;
+    Graphics2D g;
+
+    image = new BufferedImage(icon.getIconWidth(), icon.getIconHeight(), BufferedImage.TYPE_INT_ARGB);
+    g     = image.createGraphics();
+    icon.paintIcon(null, g, 0, 0);
+    ImageIO.write(image, "png", new File(filename));
+  }
+
+  /**
+   * Scales the icon to the specified size.
+   *
+   * @param icon 	the icon to scale
+   * @param size 	the size to scale to
+   * @return		the scaled image
+   */
+  public static ImageIcon scaleIcon(ImageIcon icon, int size) {
+    return new ImageIcon(icon.getImage().getScaledInstance(size, size, Image.SCALE_SMOOTH));
+  }
+
+  /**
+   * Loads the icon from a resource path.
+   *
+   * @param resource	the icon to load
+   * @param size	the size to scale to
+   * @return		the icon, null if failed to load
+   */
+  public static Icon loadIcon(String resource, int size) {
+    Icon	result;
+
+    result = null;
+
+    try {
+      result = new ImageIcon(ClassLoader.getSystemClassLoader().getResource(resource));
+      result = scaleIcon((ImageIcon) result, size);
+    }
+    catch (Exception e) {
+      System.err.println("Failed to load icon: " + resource);
+      e.printStackTrace();
+    }
+
+    return result;
   }
 }

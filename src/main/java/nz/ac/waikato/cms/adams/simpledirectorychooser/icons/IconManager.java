@@ -5,10 +5,11 @@
 
 package nz.ac.waikato.cms.adams.simpledirectorychooser.icons;
 
+import nz.ac.waikato.cms.adams.simpledirectorychooser.core.GUIHelper;
+
 import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileSystemView;
-import java.awt.Image;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -46,14 +47,23 @@ public class IconManager {
   /** the key for the license. */
   public final static String KEY_LICENSE = "license";
 
-  /** the key for the drive. */
+  /** the key for the drive icon. */
   public final static String KEY_DRIVE = "drive";
 
-  /** the key for the closed folder. */
+  /** the key for the closed folder icon. */
   public final static String KEY_CLOSED = "closed";
 
-  /** the key for the open folder. */
+  /** the key for the open folder icon. */
   public final static String KEY_OPEN = "open";
+
+  /** the key for the home icon. */
+  public final static String KEY_HOME = "home";
+
+  /** the key for the new folder icon. */
+  public final static String KEY_NEW_FOLDER = "new_folder";
+
+  /** the key for the refresh icon. */
+  public final static String KEY_REFRESH = "refresh";
 
   /** the default icon size. */
   public final static int DEFAULT_ICON_SIZE = 16;
@@ -191,8 +201,14 @@ public class IconManager {
       return "Missing icon set key: " + KEY_OPEN;
     if (props.getProperty(KEY_CLOSED) == null)
       return "Missing icon set key: " + KEY_CLOSED;
+    if (props.getProperty(KEY_HOME) == null)
+      return "Missing icon set key: " + KEY_HOME;
+    if (props.getProperty(KEY_NEW_FOLDER) == null)
+      return "Missing icon set key: " + KEY_NEW_FOLDER;
+    if (props.getProperty(KEY_REFRESH) == null)
+      return "Missing icon set key: " + KEY_REFRESH;
     if (props.getProperty(KEY_ICON_SIZE) == null)
-      return "Missing sets key: " + KEY_ICON_SIZE;
+      return "Missing icon set key: " + KEY_ICON_SIZE;
 
     return null;
   }
@@ -248,54 +264,40 @@ public class IconManager {
   }
 
   /**
+   * Sets the file system view to use.
+   *
+   * @param value	the view object
+   */
+  public void setView(FileSystemView value) {
+    m_View = value;
+  }
+
+  /**
    * Returns the file system view object in use.
    *
    * @return		the view object
    */
-  protected FileSystemView getView() {
+  public FileSystemView getView() {
     if (m_View == null)
       m_View = FileSystemView.getFileSystemView();
     return m_View;
   }
 
   /**
-   * Scales the icon to the specified size.
+   * Loads the icon from a resource path.
    *
-   * @param icon 	the icon to scale
-   * @param size 	the size to scale to
-   * @return		the scaled image
-   */
-  public static ImageIcon scale(ImageIcon icon, int size) {
-    return new ImageIcon(icon.getImage().getScaledInstance(size, size, Image.SCALE_SMOOTH));
-  }
-
-  /**
-   * Loads the icon.
-   *
-   * @param filename	the icon to load
+   * @param resource	the icon to load
    * @return		the icon, null if failed to load
    */
-  protected Icon loadIcon(String filename) {
+  protected Icon loadIcon(String resource) {
     Icon	result;
-    int		size;
 
-    result = null;
-
-    if (m_Cache.containsKey(filename)) {
-      result = m_Cache.get(filename);
+    if (m_Cache.containsKey(resource)) {
+      result = m_Cache.get(resource);
     }
     else {
-      size = getIconSize();
-      try {
-	result = new ImageIcon(ClassLoader.getSystemClassLoader().getResource(filename));
-	result = scale((ImageIcon) result, size);
-	m_Cache.put(filename, result);
-      }
-      catch (Exception e) {
-	System.err.println("Failed to load icon: " + filename);
-	e.printStackTrace();
-	m_Cache.put(filename, null);
-      }
+      result = GUIHelper.loadIcon(resource, getIconSize());
+      m_Cache.put(resource, result);
     }
 
     return result;
@@ -354,6 +356,33 @@ public class IconManager {
   }
 
   /**
+   * Returns the home icon.
+   *
+   * @return		the icon, null if none available
+   */
+  public Icon getHomeIcon() {
+    return getIcon(KEY_HOME);
+  }
+
+  /**
+   * Returns the new folder icon.
+   *
+   * @return		the icon, null if none available
+   */
+  public Icon getNewFolderIcon() {
+    return getIcon(KEY_NEW_FOLDER);
+  }
+
+  /**
+   * Returns the refresh icon.
+   *
+   * @return		the icon, null if none available
+   */
+  public Icon getRefreshIcon() {
+    return getIcon(KEY_REFRESH);
+  }
+
+  /**
    * Returns the icon size.
    *
    * @return		the size
@@ -383,7 +412,7 @@ public class IconManager {
 
     result = getView().getSystemIcon(dir);
     if (result instanceof ImageIcon)
-      result = scale((ImageIcon) result, getIconSize());
+      result = GUIHelper.scaleIcon((ImageIcon) result, getIconSize());
 
     m_Cache.put(path, result);
 

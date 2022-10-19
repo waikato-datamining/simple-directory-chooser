@@ -6,6 +6,7 @@
 package nz.ac.waikato.cms.adams.simpledirectorychooser;
 
 import nz.ac.waikato.cms.adams.simpledirectorychooser.core.GUIHelper;
+import nz.ac.waikato.cms.adams.simpledirectorychooser.events.DirectoryChangeEvent;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.events.DirectoryChangeListener;
 import nz.ac.waikato.cms.adams.simpledirectorychooser.icons.IconManager;
 
@@ -15,6 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JToolBar;
 import javax.swing.TransferHandler;
@@ -45,7 +47,8 @@ import java.io.File;
  * @author fracpete (fracpete at waikato dot ac dot nz)
  */
 public class SimpleDirectoryChooser
-    extends JComponent {
+    extends JComponent
+    implements DirectoryChangeListener {
 
   /** open or save. */
   protected int m_DialogType;
@@ -82,6 +85,15 @@ public class SimpleDirectoryChooser
 
   /** the toolbar. */
   protected JToolBar m_Toolbar;
+
+  /** the home button. */
+  protected JButton m_ButtonHome;
+
+  /** the new folder button. */
+  protected JButton m_ButtonNewFolder;
+
+  /** the refresh button. */
+  protected JButton m_ButtonRefresh;
 
   /**
    * Constructs a <code>BaseFileChooser</code> pointing to the user's
@@ -156,10 +168,70 @@ public class SimpleDirectoryChooser
     m_PanelButtons.add(m_ButtonCancel);
     m_PanelWidgets.add(m_PanelButtons, BorderLayout.SOUTH);
 
-    m_Toolbar = new JToolBar();
-    // TODO
-    m_Toolbar.setVisible(false);
+    m_Toolbar         = new JToolBar();
+    m_Toolbar.setFloatable(false);
+    m_ButtonHome      = new JButton(m_PanelDirs.getIconManager().getHomeIcon());
+    m_ButtonHome.addActionListener((ActionEvent e) -> goHome());
+    m_Toolbar.add(m_ButtonHome);
+    m_ButtonNewFolder = new JButton(m_PanelDirs.getIconManager().getNewFolderIcon());
+    m_ButtonNewFolder.addActionListener((ActionEvent e) -> newFolder());
+    m_Toolbar.add(m_ButtonNewFolder);
+    m_ButtonRefresh = new JButton(m_PanelDirs.getIconManager().getRefreshIcon());
+    m_ButtonRefresh.addActionListener((ActionEvent e) -> refresh());
+    m_Toolbar.add(m_ButtonRefresh);
     m_PanelWidgets.add(m_Toolbar, BorderLayout.NORTH);
+
+    addChangeListener(this);
+  }
+
+  /**
+   * Update the state of the buttons.
+   */
+  protected void updateButtons() {
+    m_ButtonApprove.setEnabled((getCurrentDirectory() != null));
+  }
+
+  /**
+   * Sets the current directory to the user's home directory.
+   */
+  protected void goHome() {
+    setCurrentDirectory(new File(System.getProperty("user.home")));
+    m_PanelDirs.requestFocusInWindow();
+  }
+
+  /**
+   * Let's the user create a new folder.
+   */
+  protected void newFolder() {
+    String	folderName;
+    File	folder;
+
+    folderName = JOptionPane.showInputDialog("Please enter name for new folder:");
+    if (folderName == null) {
+      m_PanelDirs.requestFocusInWindow();
+      return;
+    }
+
+    folder = new File(getCurrentDirectory(), folderName);
+    try {
+      if (!folder.mkdir())
+	JOptionPane.showMessageDialog(m_Dialog, "Failed to create folder:\n" + folder, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+    catch (Exception e) {
+      JOptionPane.showMessageDialog(m_Dialog, "Failed to create folder:\n" + folder + "\nDue to:\n" + e, "Error", JOptionPane.ERROR_MESSAGE);
+    }
+
+    refresh();
+    setCurrentDirectory(folder);
+    m_PanelDirs.requestFocusInWindow();
+  }
+
+  /**
+   * Refreshes the view.
+   */
+  protected void refresh() {
+    m_PanelDirs.refresh();
+    m_PanelDirs.requestFocusInWindow();
   }
 
   /**
@@ -403,6 +475,7 @@ public class SimpleDirectoryChooser
     result.getContentPane().add(m_PanelWidgets);
     result.pack();
     result.setLocationRelativeTo(parent);
+    m_PanelDirs.requestFocusInWindow();
 
     return result;
   }
@@ -1065,6 +1138,7 @@ public class SimpleDirectoryChooser
    */
   public void setFileSystemView(FileSystemView fsv) {
     m_View = fsv;
+    m_PanelDirs.setView(fsv);
   }
 
   /**
@@ -1211,6 +1285,8 @@ public class SimpleDirectoryChooser
    * @param value	the manager
    */
   public void setIconManager(IconManager value) {
+    m_ButtonHome.setIcon(value.getHomeIcon());
+    m_ButtonNewFolder.setIcon(value.getNewFolderIcon());
     m_PanelDirs.setIconManager(value);
   }
 
@@ -1239,5 +1315,14 @@ public class SimpleDirectoryChooser
    */
   public void removeChangeListener(DirectoryChangeListener l) {
     m_PanelDirs.removeChangeListener(l);
+  }
+
+  /**
+   * Gets called when the current directory changes.
+   *
+   * @param e		the event
+   */
+  public void directoryChanged(DirectoryChangeEvent e) {
+    updateButtons();
   }
 }

@@ -3,4 +3,7 @@ license=free for commercial use
 open=40785_folder_open_icon.png
 closed=40779_folder_icon.png
 drive=40762_database_active_icon.png
+home=40798_home_icon.png
+new_folder=40780_folder_add_icon.png
+refresh=40719_update_refresh_repeat_restart_icon.png
 icon_size=16
