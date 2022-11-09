@@ -56,6 +56,24 @@ public class SimpleDirectoryChooserPanel
   }
 
   /**
+   * Sets the currently selected directories.
+   *
+   * @param value	the directories
+   */
+  public void setSelectedDirectories(File[] value) {
+    m_Tree.setSelectedDirectories(value);
+  }
+
+  /**
+   * Returns the currently selected directories, if any.
+   *
+   * @return		the directories
+   */
+  public File[] getSelectedDirectories() {
+    return m_Tree.getSelectedDirectories();
+  }
+
+  /**
    * Returns the last directory.
    *
    * @return		the directory, can be null
@@ -210,5 +228,43 @@ public class SimpleDirectoryChooserPanel
    */
   public void newFolder(boolean grabFocus) {
     m_Tree.newFolder(grabFocus);
+  }
+
+  /**
+   * Sets the file chooser to allow multiple dir selections.
+   *
+   * @param value true if multiple dirs may be selected
+   * @see #isMultiSelectionEnabled
+   */
+  public void setMultiSelectionEnabled(boolean value) {
+    m_Tree.setMultiSelectionEnabled(value);
+  }
+
+  /**
+   * Returns true if multiple dirs can be selected.
+   *
+   * @return true if multiple dirs can be selected
+   * @see #setMultiSelectionEnabled
+   */
+  public boolean isMultiSelectionEnabled() {
+    return m_Tree.isMultiSelectionEnabled();
+  }
+
+  /**
+   * Sets whether to sort the selected directories.
+   *
+   * @param value	true if to sort
+   */
+  public void setSortSelectedDirectories(boolean value) {
+    m_Tree.setSortSelectedDirectories(value);
+  }
+
+  /**
+   * Returns whether the selected directories get sorted.
+   *
+   * @return		true if to sort
+   */
+  public boolean getSortSelectedDirectories() {
+    return m_Tree.getSortSelectedDirectories();
   }
 }

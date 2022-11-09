@@ -1,6 +1,11 @@
 # simple-directory-chooser
 Simple Java swing widgets for selecting directories, more intuitive than using the JFileChooser dialog.
 
+By default, only a single directory can be selected, but this can be changed by calling the 
+`setMultiSelectionEnabled(boolean)` method. Whether the returned directories are in order of
+selection or alphabetically ordered can be influenced with `setSortSelectedDirectories(boolean)`.
+
+
 ## Widgets
 
 * `nz.ac.waikato.cms.adams.simpledirectorychooser.SimpleDirectoryChooserPanel` - panel that displays the 
@@ -27,6 +32,7 @@ The following classes demonstrate the use of the widgets:
 
 * [PanelExample.java](src/main/java/nz/ac/waikato/cms/adams/simpledirectorychooser/examples/PanelExample.java)
 * [SimpleDirectoryChooserExample.java](src/main/java/nz/ac/waikato/cms/adams/simpledirectorychooser/examples/SimpleDirectoryChooserExample.java)
+* [SimpleDirectoryChooserMultiSelectionExample.java](src/main/java/nz/ac/waikato/cms/adams/simpledirectorychooser/examples/SimpleDirectoryChooserMultiSelectionExample.java)
 
 
 ## Screenshots

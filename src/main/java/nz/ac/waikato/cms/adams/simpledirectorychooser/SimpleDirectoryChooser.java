@@ -348,10 +348,7 @@ public class SimpleDirectoryChooser
    * @return an array of selected {@code File}s
    */
   public File[] getSelectedFiles() {
-    if (getCurrentDirectory() == null)
-      return new File[0];
-    else
-      return new File[]{getCurrentDirectory()};
+    return m_PanelDirs.getSelectedDirectories();
   }
 
   /**
@@ -361,8 +358,7 @@ public class SimpleDirectoryChooser
    * @param selectedFiles an array {@code File}s to be selected
    */
   public void setSelectedFiles(File[] selectedFiles) {
-    if (selectedFiles.length == 1)
-      setSelectedFile(selectedFiles[0]);
+    m_PanelDirs.setSelectedDirectories(selectedFiles);
   }
 
   /**
@@ -986,22 +982,21 @@ public class SimpleDirectoryChooser
    * Sets the file chooser to allow multiple file selections.
    *
    * @param b true if multiple files may be selected
-   *
    * @see #isMultiSelectionEnabled
    */
   public void setMultiSelectionEnabled(boolean b) {
-    // ignored
+    m_PanelDirs.setMultiSelectionEnabled(b);
   }
 
   /**
    * Returns true if multiple files can be selected.
+   *
    * @return true if multiple files can be selected
    * @see #setMultiSelectionEnabled
    */
   public boolean isMultiSelectionEnabled() {
-    return false;
+    return m_PanelDirs.isMultiSelectionEnabled();
   }
-
 
   /**
    * Returns true if hidden files are not shown in the file chooser;
@@ -1388,5 +1383,23 @@ public class SimpleDirectoryChooser
    */
   public boolean isPopupMenuEnabled() {
     return m_PanelDirs.isPopupMenuEnabled();
+  }
+
+  /**
+   * Sets whether to sort the selected directories.
+   *
+   * @param value	true if to sort
+   */
+  public void setSortSelectedDirectories(boolean value) {
+    m_PanelDirs.setSortSelectedDirectories(value);
+  }
+
+  /**
+   * Returns whether the selected directories get sorted.
+   *
+   * @return		true if to sort
+   */
+  public boolean getSortSelectedDirectories() {
+    return m_PanelDirs.getSortSelectedDirectories();
   }
 }

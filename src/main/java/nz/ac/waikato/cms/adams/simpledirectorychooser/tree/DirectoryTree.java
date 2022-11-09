@@ -23,12 +23,14 @@ import javax.swing.filechooser.FileSystemView;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.ExpandVetoException;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -66,6 +68,9 @@ public class DirectoryTree
   /** the popup menu customizer. */
   protected DirectoryTreePopupMenuCustomizer m_PopupMenuCustomizer;
 
+  /** whether to sort selected directories. */
+  protected boolean m_SortSelectedDirectories;
+
   /**
    * Initializes the tree. Does not show hidden dirs.
    */
@@ -94,9 +99,11 @@ public class DirectoryTree
 
     initializeMembers();
 
-    m_ShowHidden = showHidden;
-    m_View       = view;
+    m_ShowHidden              = showHidden;
+    m_View                    = view;
+    m_SortSelectedDirectories = false;
     setIconManager(iconManager);
+    setMultiSelectionEnabled(false);
 
     addTreeWillExpandListener(this);
     addTreeSelectionListener(this);
@@ -373,6 +380,63 @@ public class DirectoryTree
   }
 
   /**
+   * Sets the currently selected directories.
+   *
+   * @param value	the directories
+   */
+  public void setSelectedDirectories(File[] value) {
+    DirectoryNode	node;
+    List<TreePath>	paths;
+    TreePath		firstPath;
+    TreePath		path;
+
+    if (!isMultiSelectionEnabled()) {
+      if (value.length > 0)
+	setCurrentDirectory(value[0]);
+      return;
+    }
+
+    paths     = new ArrayList<>();
+    firstPath = null;
+    for (File f: value) {
+      node = expandDirectory(f);
+      if (node != null) {
+	path = new TreePath(node.getPath());
+	if (firstPath == null)
+	  firstPath = path;
+	paths.add(path);
+	node.expandIfNecessary();
+      }
+    }
+    setSelectionPaths(paths.toArray(new TreePath[0]));
+    if (firstPath != null)
+      scrollPathToVisible(firstPath);
+  }
+
+  /**
+   * Returns the currently selected directories, if any.
+   *
+   * @return		the directories
+   */
+  public File[] getSelectedDirectories() {
+    List<File>		result;
+    TreePath[]		paths;
+
+    result = new ArrayList<>();
+    paths  = getSelectionPaths();
+    if (paths != null) {
+      for (TreePath path: paths)
+        if (path.getLastPathComponent() instanceof DirectoryNode)
+	  result.add(((DirectoryNode) path.getLastPathComponent()).getDirectory());
+    }
+
+    if (getSortSelectedDirectories())
+      Collections.sort(result);
+
+    return result.toArray(new File[0]);
+  }
+
+  /**
    * Makes sure that the specified file is viewable, and
    * not hidden.
    *
@@ -522,5 +586,43 @@ public class DirectoryTree
    */
   public boolean isPopupMenuEnabled() {
     return m_PopupMenuEnabled;
+  }
+
+  /**
+   * Sets the file chooser to allow multiple dir selections.
+   *
+   * @param value true if multiple dirs may be selected
+   * @see #isMultiSelectionEnabled
+   */
+  public void setMultiSelectionEnabled(boolean value) {
+    getSelectionModel().setSelectionMode(value ? TreeSelectionModel.DISCONTIGUOUS_TREE_SELECTION : TreeSelectionModel.SINGLE_TREE_SELECTION);
+  }
+
+  /**
+   * Returns true if multiple dirs can be selected.
+   *
+   * @return true if multiple dirs can be selected
+   * @see #setMultiSelectionEnabled
+   */
+  public boolean isMultiSelectionEnabled() {
+    return (getSelectionModel().getSelectionMode() != TreeSelectionModel.SINGLE_TREE_SELECTION);
+  }
+
+  /**
+   * Sets whether to sort the selected directories.
+   *
+   * @param value	true if to sort
+   */
+  public void setSortSelectedDirectories(boolean value) {
+    m_SortSelectedDirectories = value;
+  }
+
+  /**
+   * Returns whether the selected directories get sorted.
+   *
+   * @return		true if to sort
+   */
+  public boolean getSortSelectedDirectories() {
+    return m_SortSelectedDirectories;
   }
 }
