@@ -12,3 +12,7 @@ After the release perform:
 git push
 ```
 
+Go to Github, edit the Maven-generated release [tag](https://github.com/waikato-datamining/simple-directory-chooser/tags) 
+and add all the generated artifacts (incl .asc) from the `target` directory.
+
+Update the version of the Maven artifact in [README.md](README.md#maven).
