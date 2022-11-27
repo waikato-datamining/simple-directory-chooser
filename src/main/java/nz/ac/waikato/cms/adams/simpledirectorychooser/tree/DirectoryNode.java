@@ -6,6 +6,7 @@
 package nz.ac.waikato.cms.adams.simpledirectorychooser.tree;
 
 import javax.swing.filechooser.FileSystemView;
+import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.io.File;
 import java.util.ArrayList;
@@ -157,6 +158,11 @@ public class DirectoryNode
     for (File dir: dirs)
       add(new DirectoryNode(getOwner(), dir, getShowHidden()));
 
+    // flag as changed to trigger redraw
+    if (getOwner().getModel() instanceof DefaultTreeModel)
+      ((DefaultTreeModel) getOwner().getModel()).nodeStructureChanged(this);
+
+    // expand path
     getOwner().expandPath(new TreePath(getPath()));
   }
 
