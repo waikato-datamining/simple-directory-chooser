@@ -463,6 +463,8 @@ public class DirectoryTree
     DirectoryNode 	node;
 
     node = expandDirectory(getCurrentDirectory());
+    if (node == null)
+      return;
     node.reset();
     node.expandIfNecessary();
   }
