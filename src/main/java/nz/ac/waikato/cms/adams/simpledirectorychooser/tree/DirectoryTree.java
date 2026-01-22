@@ -1,6 +1,6 @@
 /*
  * DirectoryTree.java
- * Copyright (C) 2022 University of Waikato, Hamilton, New Zealand
+ * Copyright (C) 2022-2026 University of Waikato, Hamilton, New Zealand
  */
 
 package nz.ac.waikato.cms.adams.simpledirectorychooser.tree;
@@ -325,7 +325,7 @@ public class DirectoryTree
     }
 
     // "." at the end?
-    if ((result.size() > 0) && result.get(result.size() - 1).equals("."))
+    if ((!result.isEmpty()) && result.get(result.size() - 1).equals("."))
       result.remove(result.size() - 1);
 
     return result.toArray(new String[0]);
@@ -343,6 +343,9 @@ public class DirectoryTree
     int			i;
     ExpandableNode	node;
     ExpandableNode 	root;
+
+    if (value == null)
+      return null;
 
     result = null;
     root   = (ExpandableNode) getModel().getRoot();
