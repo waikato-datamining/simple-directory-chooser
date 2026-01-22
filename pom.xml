@@ -5,7 +5,7 @@
 
   <groupId>nz.ac.waikato.cms.adams</groupId>
   <artifactId>simple-directory-chooser</artifactId>
-  <version>0.0.5</version>
+  <version>0.0.6-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <name>simple-directory-chooser</name>
@@ -38,7 +38,7 @@
     <connection>scm:git:ssh://git@github.com/waikato-datamining/simple-directory-chooser</connection>
     <developerConnection>scm:git:ssh://git@github.com/waikato-datamining/simple-directory-chooser</developerConnection>
     <url>https://github.com/waikato-datamining/simple-directory-chooser</url>
-    <tag>simple-directory-chooser-0.0.5</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <properties>
